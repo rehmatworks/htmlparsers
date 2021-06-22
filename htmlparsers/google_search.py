@@ -96,7 +96,7 @@ class GoogleHtmlParser:
     def get_data(self) -> dict:
         """Get Final Data
 
-        Return the parsed data including organic search results, estimated results count, and other
+        Returns the parsed data including organic search results, estimated results count, and other
         elements as a dict.
         """
         return {
