@@ -42,32 +42,32 @@ class TestGoogleHtmlParser(unittest.TestCase):
         # Confirm that the data has results
         self.assertGreater(len(results), 1)
 
-    def test_result_has_url(self) -> None:
+    def test_results_has_url(self) -> None:
         """Ensure URL
 
         Test that the result dict has the URL value set.
         """
         results = self.parser._get_organic()
-        result = results[0]
-        self.assertNotEqual(result.get('url'), None)
+        for result in results:
+            self.assertNotEqual(result.get('url'), None)
 
-    def test_result_has_title(self) -> None:
+    def test_results_has_title(self) -> None:
         """Test Title
 
         Ensure that the result dict has the title value set.
         """
         results = self.parser._get_organic()
-        result = results[0]
-        self.assertNotEqual(result.get('title'), None)
+        for result in results:
+            self.assertNotEqual(result.get('title'), None)
     
-    def test_result_has_snippet(self) -> None:
+    def test_results_has_snippet(self) -> None:
         """Test Snippet
         
         Ensure that the result dict has the snippet value set.
         """
         results = self.parser._get_organic()
-        result = results[0]
-        self.assertNotEqual(result.get('snippet'), None)
+        for result in results:
+            self.assertNotEqual(result.get('snippet'), None)
     
     def test__get_estimated_results(self) -> None:
         """Test Estimated Results
