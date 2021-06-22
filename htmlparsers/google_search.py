@@ -23,14 +23,14 @@ class GoogleHtmlParser:
     HTML responses.
     
     Attributes:
-        tree: Holds the parsed document element parsed through html.fromstring()
+        tree: Holds the document object element parsed through html.fromstring()
     """
 
     def __init__(self, html_str) -> None:
-        """Set HTML content attribute.
+        """Create the document tree.
 
-        This method takes the html_str argument and sets the tree attribute that we can
-        access in other methods.
+        Parses the provided HTML string using html.fromstring() and
+        sets the parsed object as tree attributed.
         
         Args:
             html_str: Google Search HTML source as a string.
