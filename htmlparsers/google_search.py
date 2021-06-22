@@ -1,5 +1,3 @@
-import json
-
 from lxml import html
 from lxml import etree
 
@@ -24,9 +22,15 @@ class GoogleHtmlParser:
         It takes a malformed string, cleans it, and returns the cleaned string.
         """
         if content:
+            # Deal unicode strings
             content = content.encode('ascii', 'ignore').decode('utf-8')
+            
+            # Stripe whitespaces
             content = content.strip()
+            
+            # Convert multiple spaces to one
             content = ' '.join(content.split())
+            
             return content
         return ''
 
