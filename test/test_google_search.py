@@ -1,5 +1,5 @@
 import unittest
-from snippets.google_search import GoogleHtmlParser
+from htmlparsers.google_search import GoogleHtmlParser
 import requests
 
 

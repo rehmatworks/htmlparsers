@@ -7,8 +7,8 @@ from lxml import etree
 class GoogleHtmlParser:
     """Google HTML Parser
 
-    This class parses the raw HTML from Google Search and transforms it to
-    JSON. You can use this class to parse Google Search mobile and desktop
+    This class parses the raw HTML from Google Search and transforms it into a usable
+    JSON object. You can use this class to parse Google Search mobile and desktop
     HTML responses.
     """
 
