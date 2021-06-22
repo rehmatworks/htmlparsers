@@ -30,7 +30,7 @@ class GoogleHtmlParser:
         """Create the document tree.
 
         Parses the provided HTML string using html.fromstring() and
-        sets the parsed object as tree attributed.
+        sets the parsed object in the tree attribute.
         
         Args:
             html_str: Google Search HTML source as a string.
