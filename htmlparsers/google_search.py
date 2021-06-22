@@ -25,7 +25,7 @@ class GoogleHtmlParser:
             # Deal unicode strings
             content = content.encode('ascii', 'ignore').decode('utf-8')
             
-            # Stripe whitespaces
+            # Strip whitespaces
             content = content.strip()
             
             # Convert multiple spaces to one
