@@ -35,6 +35,14 @@ class GoogleHtmlParser:
             return content
         return ''
 
+    def _get_estimated_results(self) -> int:
+        """Get Estimated Results
+        
+        Get the estimated results count as an integer for the performed search.
+        """
+        estimated_str = self.tree.xpath('//*[@id="result-stats"]/text()')[0]
+        return int(estimated_str.split()[1].replace(',', ''))
+
     def _get_organic(self) -> list:
         """Get organic results
         
@@ -64,3 +72,13 @@ class GoogleHtmlParser:
             }
             organic.append(res)
         return organic
+
+    def get_data(self) -> dict:
+        """Get Final Data
+        
+        Return the parsed data including organic search results, estimated results count, and other elements as a dict.
+        """
+        return {
+            'estimated_results': self._get_estimated_results(),
+            'organic_results': self._get_organic()
+        }

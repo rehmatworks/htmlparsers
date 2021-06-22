@@ -9,7 +9,7 @@ class TestGoogleHtmlParser(unittest.TestCase):
     This test case tests the GoogleHtmlParser class to ensure that it works as expected.
     """
 
-    def setUp(self):
+    def setUp(self) -> None:
         """Setup Test Resources
 
         Setup the resources that we need to rely on in order to perform the tests.
@@ -22,14 +22,14 @@ class TestGoogleHtmlParser(unittest.TestCase):
             'https://www.google.com/search?q=data+science&num=100', headers=headers)
         self.parser = GoogleHtmlParser(html_str=res.text)
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         """Destroy the Resources
 
         Destroy all the resources that we created in order to run our tests.
         """
         self.client.close()
 
-    def test_organic_results(self):
+    def test__get_organic(self) -> None:
         """Test Organic Results
 
         Test organic results and ensure that the results are parsed correctly.
@@ -42,17 +42,17 @@ class TestGoogleHtmlParser(unittest.TestCase):
         # Confirm that the data has results
         self.assertGreater(len(results), 1)
 
-    def test_result_has_url(self):
+    def test_result_has_url(self) -> None:
         """Ensure URL
 
-        Ensure that the result dict has the URL value set.
+        Test that the result dict has the URL value set.
         """
         results = self.parser._get_organic()
         result = results[0]
         self.assertNotEqual(result.get('url'), None)
 
-    def test_result_has_title(self):
-        """Ensure Title
+    def test_result_has_title(self) -> None:
+        """Test Title
 
         Ensure that the result dict has the title value set.
         """
@@ -60,11 +60,27 @@ class TestGoogleHtmlParser(unittest.TestCase):
         result = results[0]
         self.assertNotEqual(result.get('title'), None)
     
-    def test_result_has_snippet(self):
-        """Ensure Snippet
+    def test_result_has_snippet(self) -> None:
+        """Test Snippet
         
         Ensure that the result dict has the snippet value set.
         """
         results = self.parser._get_organic()
         result = results[0]
         self.assertNotEqual(result.get('snippet'), None)
+    
+    def test__get_estimated_results(self) -> None:
+        """Test Estimated Results
+        
+        Ensure that we get the estimated results count from Google as an integer.
+        """
+        estimated_results = self.parser._get_estimated_results()
+        self.assertEqual(type(estimated_results), int)
+    
+    def test_get_data(self) -> None:
+        """Test Final Data
+        
+        Ensure that we get the final data in form of a dictionary.
+        """
+        final_data = self.parser.get_data()
+        self.assertEqual(type(final_data), dict)
