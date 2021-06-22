@@ -13,12 +13,13 @@ class GoogleHtmlParser:
     def __init__(self, html_str) -> None:
         """Set HTML content attribute
 
-        This method takes the html argument and sets the tree attribute that we can access in other methods.
+        This method takes the html_str argument and sets the tree attribute that we can access in other methods.
         """
         self.tree = html.fromstring(html_str)
 
     def _clean(self, content) -> str:
         """Clean content
+        
         It takes a malformed string, cleans it, and returns the cleaned string.
         """
         if content:
@@ -36,8 +37,9 @@ class GoogleHtmlParser:
 
     def _get_organic(self) -> list:
         """Get organic results
+        
         This method returns the list of organic results. The data returned by this method doesn't contain
-        other search features like featured snippets, people also ask section and others.
+        other search features like featured snippets, people also ask section etc.
         """
         organic = []
         for g in self.tree.xpath('//div[@class="g"]'):
