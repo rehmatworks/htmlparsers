@@ -21,6 +21,9 @@ class GoogleHtmlParser:
     This class parses the raw HTML from Google Search and transforms it into a usable
     dictionary. You can use this class to parse both Google Search mobile and desktop
     HTML responses.
+    
+    Attributes:
+        tree: Holds the parsed document element parsed through html.fromstring()
     """
 
     def __init__(self, html_str) -> None:
@@ -28,6 +31,9 @@ class GoogleHtmlParser:
 
         This method takes the html_str argument and sets the tree attribute that we can
         access in other methods.
+        
+        Args:
+            html_str: Google Search HTML source as a string.
         """
         self.tree = html.fromstring(html_str)
 
@@ -35,7 +41,14 @@ class GoogleHtmlParser:
         """Clean content.
 
         It takes a malformed string, cleans it, and returns the cleaned string.
+        
+        Args:
+            content: The string to clean.
+        
+        Returns:
+            The cleaned string is returned.
         """
+        
         if content:
             # Deal unicode strings
             content = content.encode('ascii', 'ignore').decode('utf-8')
@@ -54,6 +67,12 @@ class GoogleHtmlParser:
 
         Get the estimated results count as an integer for the performed search. Estimated results
         are available only in the HTML that Google returns for the desktop user agents.
+        
+        Returns:
+            An integer of the estimated results count parsed from the tag div with ID result-stats.
+            
+        Raises:
+            InvalidGoogleHtml: The HTML does not seems to be a valid Google SERPs HTML.
         """
         try:
             estimated_str = self.tree.xpath(
@@ -68,6 +87,9 @@ class GoogleHtmlParser:
 
         This method returns the list of organic results. The data returned by this method doesn't
         contain other search features like featured snippets, people also ask section etc.
+        
+        Returns:
+            A list of organic Google Search results is returned.
         """
         organic = []
         for g in self.tree.xpath('//div[@class="g"]'):
@@ -96,8 +118,12 @@ class GoogleHtmlParser:
     def get_data(self) -> dict:
         """Get the final data.
 
-        Returns the parsed data including organic search results, estimated results count, and other
+        Get the data including organic search results, estimated results count, and other
         elements as a dict.
+        
+        Returns:
+            A dict that contains all SERP features including estimated results count, organic
+            results, and more.
         """
         return {
             'estimated_results': self._get_estimated_results(),
