@@ -21,7 +21,7 @@ class GoogleHtmlParser:
     This class parses the raw HTML from Google Search and transforms it into a usable
     dictionary. You can use this class to parse both Google Search mobile and desktop
     HTML responses.
-    
+
     Attributes:
         tree: Holds the document object element parsed through html.fromstring()
     """
@@ -31,7 +31,7 @@ class GoogleHtmlParser:
 
         Parses the provided HTML string using html.fromstring() and
         sets the parsed object in the tree attribute.
-        
+
         Args:
             html_str: Google Search HTML source as a string.
         """
@@ -41,14 +41,14 @@ class GoogleHtmlParser:
         """Clean content.
 
         It takes a malformed string, cleans it, and returns the cleaned string.
-        
+
         Args:
             content: The string to clean.
-        
+
         Returns:
             The cleaned string is returned.
         """
-        
+
         if content:
             # Deal unicode strings
             content = content.encode('ascii', 'ignore').decode('utf-8')
@@ -67,10 +67,10 @@ class GoogleHtmlParser:
 
         Get the estimated results count as an integer for the performed search. Estimated results
         are available only in the HTML that Google returns for the desktop user agents.
-        
+
         Returns:
             An integer of the estimated results count parsed from the tag div with ID result-stats.
-            
+
         Raises:
             InvalidGoogleHtml: The HTML does not seem to be a valid Google SERPs HTML.
         """
@@ -87,7 +87,7 @@ class GoogleHtmlParser:
 
         This method returns the list of organic results. The data returned by this method doesn't
         contain other search features like featured snippets, people also ask section etc.
-        
+
         Returns:
             A list of organic Google Search results is returned.
         """
@@ -115,17 +115,43 @@ class GoogleHtmlParser:
             organic.append(res)
         return organic
 
+    def _get_featured_snippet(self) -> dict:
+        """Get the featured snippet if exists.
+
+        Get the featured snippet (title, url) if it exists. If it doesn't exists,
+        then None is returned.
+
+        Returns:
+            None or dict. If featured snippet is missing, None will be returned,
+            otherwise a dict. i.e. {'title': 'Example site title', 'url': 'http://example.com'}
+        """
+        fs = None
+        snipp_el = self.tree.xpath(
+            '//div[contains(concat(" ", @class, " "), "kp-blk")]')
+        if len(snipp_el) > 0:
+            snipp_el = snipp_el[0]
+            heading = snipp_el.xpath('.//h3/text()')
+            url = snipp_el.xpath('.//a/@href')
+            if len(heading) > 0 and len(url) > 0:
+                fs = {
+                    'title': heading[0],
+                    'url': url[-1]
+                }
+
+        return fs
+
     def get_data(self) -> dict:
         """Get the final data.
 
         Get the data including organic search results, estimated results count, and other
         elements as a dict.
-        
+
         Returns:
             A dict that contains all SERP data including estimated results count, organic
             results, and more.
         """
         return {
             'estimated_results': self._get_estimated_results(),
+            'featured_snippet': self._get_featured_snippet(),
             'organic_results': self._get_organic()
         }
