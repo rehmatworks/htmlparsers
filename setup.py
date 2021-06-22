@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='htmlparsers',
-      version='1.0.0',
+      version='0.0.1',
       description='A collection of classes to parse HTML as JSON from famous sources like Google Search, Bing Search, LinkedIn and others.',
       url='https://rehmat.works',
       author='Rehmat Alam',
