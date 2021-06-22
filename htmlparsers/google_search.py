@@ -2,7 +2,7 @@ from lxml import html
 
 
 class InvalidGoogleHtml(Exception):
-    """Invalid Google HTML Provided
+    """Invalid Google HTML provided.
 
     This exception is raised when the parser fails to parse the provided HTML string. It then
     assumes that the provided HTML is not a valid Google Search HTML source.
@@ -16,7 +16,7 @@ class InvalidGoogleHtml(Exception):
 
 
 class GoogleHtmlParser:
-    """Google HTML Parser
+    """Google HTML Parser.
 
     This class parses the raw HTML from Google Search and transforms it into a usable
     dictionary. You can use this class to parse both Google Search mobile and desktop
@@ -24,15 +24,15 @@ class GoogleHtmlParser:
     """
 
     def __init__(self, html_str) -> None:
-        """Set HTML content attribute
+        """Set HTML content attribute.
 
         This method takes the html_str argument and sets the tree attribute that we can
-        accessin other methods.
+        access in other methods.
         """
         self.tree = html.fromstring(html_str)
 
     def _clean(self, content) -> str:
-        """Clean content
+        """Clean content.
 
         It takes a malformed string, cleans it, and returns the cleaned string.
         """
@@ -50,7 +50,7 @@ class GoogleHtmlParser:
         return ''
 
     def _get_estimated_results(self) -> int:
-        """Get Estimated Results
+        """Get estimated results.
 
         Get the estimated results count as an integer for the performed search. Estimated results
         are available only in the HTML that Google returns for the desktop user agents.
@@ -64,7 +64,7 @@ class GoogleHtmlParser:
                 'The provided string does not seem to be a valid Google Search (Desktop) HTML.')
 
     def _get_organic(self) -> list:
-        """Get organic results
+        """Get organic results.
 
         This method returns the list of organic results. The data returned by this method doesn't
         contain other search features like featured snippets, people also ask section etc.
@@ -94,7 +94,7 @@ class GoogleHtmlParser:
         return organic
 
     def get_data(self) -> dict:
-        """Get Final Data
+        """Get the final data.
 
         Returns the parsed data including organic search results, estimated results count, and other
         elements as a dict.
