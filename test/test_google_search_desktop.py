@@ -1,5 +1,5 @@
 import unittest
-from htmlparsers.google_search import GoogleHtmlParser
+from htmlparsers.google_search import GoogleHtmlParser, InvalidGoogleHtml
 import requests
 
 
@@ -84,3 +84,23 @@ class TestGoogleHtmlParser(unittest.TestCase):
         """
         final_data = self.parser.get_data()
         self.assertEqual(type(final_data), dict)
+    
+    def test_invalid_google_html(self) -> None:
+        """Test Invalid HTML
+        
+        Provide an invalid string as the HTML source and ensure that InvalidGoogleHtml exception is raised.
+        """
+        
+        html_str = """
+        <!DOCTYPE html>
+        <html>
+            <head>
+                <title>Invalid HTML source</title>
+            </head>
+            <body>
+                <p>This source does not contain any Google Search results.</p>
+            </body>
+        </html>
+        """
+        parser = GoogleHtmlParser(html_str)
+        self.assertRaises(InvalidGoogleHtml, parser._get_estimated_results)
