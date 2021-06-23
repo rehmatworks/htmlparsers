@@ -81,13 +81,16 @@ class GoogleHtmlParser:
         Raises:
             InvalidGoogleHtml: The HTML does not seem to be a valid Google SERPs HTML.
         """
+        estimated_results = 0
         try:
-            estimated_str = self.tree.xpath(
-                '//*[@id="result-stats"]/text()')[0]
-            return int(estimated_str.split()[1].replace(',', ''))
+            estimated_el = self.tree.xpath(
+                '//*[@id="result-stats"]/text()')
+            if len(estimated_el) > 0:
+                estimated_results = int(estimated_el[0].split()[1].replace(',', ''))
         except (ValueError, IndexError) as e:
             raise InvalidGoogleHtml(
                 'The provided string does not seem to be a valid Google Search (Desktop) HTML.')
+        return estimated_results
 
     def _get_organic(self) -> list:
         """Get organic results.
@@ -106,9 +109,9 @@ class GoogleHtmlParser:
             if len(snippets) == 1:
                 snippet = snippets[0].text_content()
             elif len(snippets) > 1:
-                if len(snippets[0].xpath('.//span')) <= 1:
-                    snippet = snippets[0].text_content()
+                if len(snippets[1].xpath('.//g-review-stars')) > 0:
                     rich_snippet = snippets[1].text_content()
+                    snippet = snippets[0].text_content()
                 else:
                     snippet = snippets[1].text_content()
                     rich_snippet = snippets[0].text_content()
@@ -164,5 +167,5 @@ class GoogleHtmlParser:
                 'featured_snippet': self._get_featured_snippet(),
                 'organic_results': self._get_organic()
             }
-
+        
         return data
