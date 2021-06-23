@@ -1,4 +1,6 @@
 import unittest
+import json
+
 from htmlparsers.google_search import GoogleHtmlParser
 import requests
 
@@ -9,26 +11,32 @@ class TestGoogleHtmlParser(unittest.TestCase):
     This test case tests the GoogleHtmlParser class to ensure that it works as expected.
     """
 
-    def setUp(self) -> None:
+    @classmethod
+    def setUpClass(cls) -> None:
         """Setup test resources.
 
         Setup the resources that we need to rely on in order to perform the tests.
         """
-        self.client = requests.session()
+        cls.client = requests.session()
         headers = {
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36'
         }
         keyword = 'data science'
-        res = self.client.get(
+        res = cls.client.get(
             f'https://www.google.com/search?q={keyword}&num=100', headers=headers)
-        self.parser = GoogleHtmlParser(html_str=res.text)
+        cls.parser = GoogleHtmlParser(html_str=res.text)
 
-    def tearDown(self) -> None:
-        """Destroy the resources.
+    @classmethod
+    def tearDownClass(cls) -> None:
+        """Close the client.
 
-        Destroy all the resources that we created in order to run our tests.
+        Close the requests client as well as store the SERPs data as JSON to a file.
         """
-        self.client.close()
+        cls.client.close()
+        
+        data = cls.parser.get_data()
+        with open('./data.json', 'w') as f:
+            f.write(json.dumps(data))
 
     def test__get_organic(self) -> None:
         """Test organic results.
