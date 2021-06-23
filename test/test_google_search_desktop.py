@@ -92,5 +92,5 @@ class TestGoogleHtmlParser(unittest.TestCase):
         Test either featured snippet was found or not. It should only be a dict
         or None.
         """
-        fs = self.parser.get_featured_snippet()
+        fs = self.parser._get_featured_snippet()
         self.assertTrue(type(fs) in [None, dict])

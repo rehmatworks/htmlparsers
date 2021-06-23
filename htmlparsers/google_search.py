@@ -54,6 +54,24 @@ class GoogleHtmlParser:
 
             return content
         return ''
+    
+    def _normalize_dict_key(self, content) -> str:
+        """Takes a string and makes it a standard dict key.
+        
+        This takes a string, replaces spaces with underscores, forces the elements to
+        lower case and returns the string. The returned string can be used a dict key.
+        """
+        
+        # Replace spaces with underscores
+        content = str(content).replace(' ', '_')
+        
+        # Remove colons
+        content = content.replace(':', '')
+        
+        # Remove underscores from end and beginning
+        content = content.lower().strip('_')
+        
+        return content
 
     def _get_estimated_results(self) -> int:
         """Get estimated results.
@@ -112,8 +130,13 @@ class GoogleHtmlParser:
         then None is returned.
 
         Returns:
-            None or dict. If featured snippet is missing, None will be returned,
-            otherwise a dict. i.e. {'title': 'Example site title', 'url': 'http://example.com'}
+           any: A dict if featured snippet is found and None otherwise. i.e.::
+
+                {
+                    'title': 'Example site title',
+                    'url': 'http://example.com'
+                }
+                
         """
         fs = None
         snipp_el = self.tree.xpath(
@@ -129,6 +152,63 @@ class GoogleHtmlParser:
                 }
 
         return fs
+    
+    def _get_knowledge_card(self) -> dict:
+        """Gets the knowledge card data if exists.
+        
+        For some search queries, for example search queries against bigger brands, and celebs, Google
+        returns a knowledge card. It contains detailed information about the searched entituy. Generally,
+        Google sources this data from Wikipedia as well as it uses its own database. If this card exists,
+        this methods returns a dictionary, otherwise returns None.
+        
+        Returns:
+            A dictionary if knowledge card exists, or None if it doesn't exist.
+        """
+        kc_el = self.tree.xpath('//div[contains(concat(" ", @class, " "), "kp-wholepage")]')
+        if len(kc_el):
+            kc_el = kc_el[0]
+            more_info = []
+            for el in kc_el.xpath('.//div[contains(@data-attrid, ":/")]'):
+                el_parts = el.xpath('.//span')
+                if len(el_parts) == 2:
+                    more_info.append({
+                        self._normalize_dict_key(el_parts[0].text_content()): el_parts[1].text_content()
+                    })
+                else:
+                    heading = el.xpath('.//div[@role="heading"]')
+                    if len(heading) > 0:
+                        heading_anchor = heading[0].xpath('.//a')
+                        if len(heading_anchor) > 0:
+                            dict_key = self._normalize_dict_key(heading_anchor[0].text_content())
+                            
+                            dict_items = []
+                            for item_div in el.xpath('.//div[@role="list"]'):
+                                
+                                # Get list items
+                                for item in item_div.xpath('.//div[@role="heading"]'):
+                                    if len(item):
+                                        dict_items.append({
+                                            'title': item.xpath('.//div[@class="title"]')[0].text_content(),
+                                            'subtitle': item.xpath('.//div')[1].text_content()
+                                        })
+                        
+                            if dict_key == 'people_also_search_for':
+                                for pasf in el.xpath('.//div[@data-reltype="sideways"]'):
+                                    dict_items.append(pasf.text_content())
+                                
+                            
+                            more_info.append({
+                                dict_key: dict_items
+                            })
+            
+            return {
+                'title': kc_el.xpath('.//h2/span')[0].text_content(),
+                'subtitle': kc_el.xpath('.//div[contains(@data-attrid, "subtitle")]')[0].text_content(),
+                'description': kc_el.xpath('.//div[@class="kno-rdesc"]/span')[0].text_content(),
+                'more_info': more_info
+            }
+        
+        return None
 
     def get_data(self) -> dict:
         """Get the final data.
