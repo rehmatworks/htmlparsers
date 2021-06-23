@@ -2,7 +2,7 @@ from lxml import html
 
 
 class InvalidGoogleHtml(Exception):
-    """Invalid Google HTML provided.
+    """Invalid Google HTML exception.
 
     This exception is raised when the parser fails to parse the provided HTML string. It then
     assumes that the provided HTML is not a valid Google Search HTML source.
@@ -118,7 +118,7 @@ class GoogleHtmlParser:
     def _get_featured_snippet(self) -> dict:
         """Get the featured snippet if exists.
 
-        Get the featured snippet (title, url) if it exists. If it doesn't exists,
+        Get the featured snippet (title, url) if it exists. If it doesn't exist,
         then None is returned.
 
         Returns:
@@ -132,7 +132,7 @@ class GoogleHtmlParser:
             snipp_el = snipp_el[0]
             heading = snipp_el.xpath('.//h3/text()')
             url = snipp_el.xpath('.//a/@href')
-            if len(heading) > 0 and len(url) > 0:
+            if all([len(item) > 0 for item in [heading, url]]):
                 fs = {
                     'title': heading[0],
                     'url': url[-1]
