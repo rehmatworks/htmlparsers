@@ -24,9 +24,10 @@ class GoogleHtmlParser:
 
     Attributes:
         tree: Holds the document object element parsed through html.fromstring()
+        user_agent: Holds the user agent used to retrieve the Google Search HTML.
     """
 
-    def __init__(self, html_str) -> None:
+    def __init__(self, html_str, user_agent='desktop') -> None:
         """Create the document tree.
 
         Parses the provided HTML string using html.fromstring() and
@@ -34,8 +35,14 @@ class GoogleHtmlParser:
 
         Args:
             html_str: Google Search HTML source as a string.
+            user_agent: User agent used to get the Google Search HTML. Can be either
+                        mobile or desktop
         """
         self.tree = html.fromstring(html_str)
+        if user_agent in ['mobile', 'desktop']:
+            self.user_agent = user_agent
+        else:
+            self.user_agent = 'desktop'
 
     def _clean(self, content) -> str:
         """Clean content.
@@ -150,8 +157,12 @@ class GoogleHtmlParser:
             A dict that contains all SERP data including estimated results count, organic
             results, and more.
         """
-        return {
-            'estimated_results': self._get_estimated_results(),
-            'featured_snippet': self._get_featured_snippet(),
-            'organic_results': self._get_organic()
-        }
+        data = {}
+        if self.user_agent == 'desktop':
+            data = {
+                'estimated_results': self._get_estimated_results(),
+                'featured_snippet': self._get_featured_snippet(),
+                'organic_results': self._get_organic()
+            }
+
+        return data
