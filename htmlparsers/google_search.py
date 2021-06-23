@@ -1,20 +1,6 @@
 from lxml import html
 
 
-class InvalidGoogleHtml(Exception):
-    """Invalid Google HTML exception.
-
-    This exception is raised when the parser fails to parse the provided HTML string. It then
-    assumes that the provided HTML is not a valid Google Search HTML source.
-    """
-
-    def __init__(self, value):
-        self.value = value
-
-    def __str__(self):
-        return repr(self.value)
-
-
 class GoogleHtmlParser:
     """Google HTML Parser.
 
@@ -82,14 +68,11 @@ class GoogleHtmlParser:
             InvalidGoogleHtml: The HTML does not seem to be a valid Google SERPs HTML.
         """
         estimated_results = 0
-        try:
-            estimated_el = self.tree.xpath(
-                '//*[@id="result-stats"]/text()')
-            if len(estimated_el) > 0:
-                estimated_results = int(estimated_el[0].split()[1].replace(',', ''))
-        except (ValueError, IndexError) as e:
-            raise InvalidGoogleHtml(
-                'The provided string does not seem to be a valid Google Search (Desktop) HTML.')
+        estimated_el = self.tree.xpath(
+            '//*[@id="result-stats"]/text()')
+        if len(estimated_el) > 0:
+            estimated_results = int(
+                estimated_el[0].split()[1].replace(',', ''))
         return estimated_results
 
     def _get_organic(self) -> list:
@@ -167,5 +150,5 @@ class GoogleHtmlParser:
                 'featured_snippet': self._get_featured_snippet(),
                 'organic_results': self._get_organic()
             }
-        
+
         return data

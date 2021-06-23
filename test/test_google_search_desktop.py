@@ -1,5 +1,5 @@
 import unittest
-from htmlparsers.google_search import GoogleHtmlParser, InvalidGoogleHtml
+from htmlparsers.google_search import GoogleHtmlParser
 import requests
 
 
@@ -60,55 +60,35 @@ class TestGoogleHtmlParser(unittest.TestCase):
         results = self.parser._get_organic()
         for result in results:
             self.assertNotEqual(result.get('title'), None)
-    
+
     def test_results_has_snippet(self) -> None:
         """Test meta description snippet.
-        
+
         Ensure that the result dict has the snippet value set.
         """
         results = self.parser._get_organic()
         for result in results:
             self.assertNotEqual(result.get('snippet'), None)
-    
+
     def test__get_estimated_results(self) -> None:
         """Test estimated results.
-        
+
         Ensure that we get the estimated results count from Google as an integer.
         """
         estimated_results = self.parser._get_estimated_results()
         self.assertEqual(type(estimated_results), int)
-    
+
     def test_get_data(self) -> None:
         """Test final data.
-        
+
         Ensure that we get the final data in form of a dictionary.
         """
         final_data = self.parser.get_data()
         self.assertEqual(type(final_data), dict)
-    
-    def test_invalid_google_html(self) -> None:
-        """Test invalid HTML.
-        
-        Provide an invalid string as the HTML source and ensure that InvalidGoogleHtml exception is raised.
-        """
-        
-        html_str = """
-        <!DOCTYPE html>
-        <html>
-            <head>
-                <title>Invalid HTML source</title>
-            </head>
-            <body>
-                <p>This source does not contain any Google Search results.</p>
-            </body>
-        </html>
-        """
-        parser = GoogleHtmlParser(html_str)
-        self.assertRaises(InvalidGoogleHtml, parser._get_estimated_results)
-    
+
     def test_featured_snippet(self) -> None:
         """Test featured snippet.
-        
+
         Test either featured snippet was found or not. It should only be a dict
         or None.
         """
