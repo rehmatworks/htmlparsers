@@ -94,3 +94,22 @@ class TestGoogleHtmlParser(unittest.TestCase):
         """
         fs = self.parser._get_featured_snippet()
         self.assertTrue(type(fs) in [None, dict])
+    
+    def test__get_knowledge_card(self) -> None:
+        """Test knowledge card data.
+        
+        Test knowledge card data retrieval method to ensure that it works
+        as expected.
+        """
+        kc = self.parser._get_knowledge_card()
+        self.assertTrue(type(kc) in [None, dict])
+    
+    def test__get_scrolling_sections(self) -> None:
+        """Test scrolling widgets.
+        
+        Test scrolling widgets data retrieval method to ensure that it works
+        as expected.
+        """
+        sw = self.parser._get_scrolling_sections()
+        self.assertEqual(type(sw), list)
+        

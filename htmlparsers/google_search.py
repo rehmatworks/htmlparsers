@@ -210,7 +210,7 @@ class GoogleHtmlParser:
         
         return None
     
-    def _get_scrolling_sections(self):
+    def _get_scrolling_sections(self) -> list:
         """Get data in scrolling widgets.
         
         Sometimes, Google shows extra results, i.e. top stories and Tweets, in a scrolling widget. This method
