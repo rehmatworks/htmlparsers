@@ -44,7 +44,7 @@ class GoogleHtmlParser:
 
         if content:
             # Deal unicode strings
-            content = content.encode('ascii', 'ignore').decode('utf-8')
+            # content = content.encode('ascii', 'ignore').decode('utf-8')
 
             # Strip whitespaces
             content = content.strip()
@@ -157,9 +157,9 @@ class GoogleHtmlParser:
         """Gets the knowledge card data if exists.
         
         For some search queries, for example search queries against bigger brands, and celebs, Google
-        returns a knowledge card. It contains detailed information about the searched entituy. Generally,
+        returns a knowledge card. It contains detailed information about the searched entity. Generally,
         Google sources this data from Wikipedia as well as it uses its own database. If this card exists,
-        this methods returns a dictionary, otherwise returns None.
+        this method returns a dictionary, otherwise None.
         
         Returns:
             A dictionary if knowledge card exists, or None if it doesn't exist.
@@ -209,6 +209,43 @@ class GoogleHtmlParser:
             }
         
         return None
+    
+    def _get_scrolling_sections(self):
+        """Get data in scrolling widgets.
+        
+        Sometimes, Google shows extra results, i.e. top stories and Tweets, in a scrolling widget. This method
+        will parse those results if available.
+        
+        Returns:
+            list: Returns a list of the results. The list will either contain results or it will be 
+                    empty if no results are found.
+        """
+        sections = self.tree.xpath('//g-section-with-header')
+        
+        data = []
+        if len(sections):
+            for section in sections:
+                section_title = section.xpath('.//h3')
+                if section_title:
+                    title = section_title[0].text_content()
+                    if title:
+                        section_data = []
+                        data_sections = section.xpath('.//g-inner-card')
+                        if len(data_sections):
+                            for data_section in data_sections:
+                                data_title = data_section.xpath('.//div[@role="heading"]/text()')
+                                data_url = data_section.xpath('.//a/@href')
+                                
+                                if all(len(item) > 0 for item in [data_title, data_url]):
+                                    section_data.append({
+                                        'title': self._clean(data_title[0]),
+                                        'url': self._clean(data_url[0])
+                                    })
+                    data.append({
+                        'section_title': title,
+                        'section_data': section_data
+                    })
+        return data
 
     def get_data(self) -> dict:
         """Get the final data.
@@ -225,7 +262,9 @@ class GoogleHtmlParser:
             data = {
                 'estimated_results': self._get_estimated_results(),
                 'featured_snippet': self._get_featured_snippet(),
-                'organic_results': self._get_organic()
+                'knowledge_card': self._get_knowledge_card(),
+                'organic_results': self._get_organic(),
+                'scrolling_widgets': self._get_scrolling_sections()
             }
 
         return data
