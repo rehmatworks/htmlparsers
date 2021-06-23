@@ -63,9 +63,6 @@ class GoogleHtmlParser:
 
         Returns:
             An integer of the estimated results count parsed from the tag div with ID result-stats.
-
-        Raises:
-            InvalidGoogleHtml: The HTML does not seem to be a valid Google SERPs HTML.
         """
         estimated_results = 0
         estimated_el = self.tree.xpath(
